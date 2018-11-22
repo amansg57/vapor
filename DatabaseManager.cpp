@@ -1,8 +1,9 @@
 //C++ Boot Camp - Task 2 - 2018-19 
-//Name: 
-//Student number: 
+//Name: Aman Gill
+//Student number: 28012198
 
 #include "DatabaseManager.h"
+#include <fstream>
 
 DatabaseManager::DatabaseManager()
 {

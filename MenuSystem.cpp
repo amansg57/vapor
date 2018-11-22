@@ -1,6 +1,6 @@
 //C++ Boot Camp - Task 2 - 2018-19 
-//Name: 
-//Student number: 
+//Name: Aman Gill
+//Student number: 28012198
 
 #include "MenuSystem.h"
 
@@ -150,6 +150,11 @@ int MenuSystem::run_unknown_user_menu()
 
 int MenuSystem::run()
 {
+	std::cout << " _   _____   ___  ____  ___ \n"
+		<< "| | / / _ | / _ \\/ __ \\/ _ \\ \n"
+		<< "| |/ / __ |/ ___/ /_/ / , _/\n"
+		<< "|___/_/ |_/_/   \\____/_/|_| \n";
+
 	int result = 0;
 	do
 	{
