@@ -32,6 +32,8 @@ private:
 
 	int run_unknown_user_menu();
 
+	void add_game();
+
 private:
 	UserBase* m_pUser = nullptr;  // the currently logged in user.
 };

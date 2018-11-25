@@ -5,6 +5,7 @@
 
 #include <string>
 #include <list>
+#include "Game.h"
 
 //--
 // UserTypeId represents an identifier for the specific user type.
@@ -14,6 +15,7 @@ enum class UserTypeId
 	kInvalid = 0
 	, kPlayerUser = 1
 	, kAdminUser = 2
+	, kGuest = 3
 };
 
 //--
@@ -67,6 +69,10 @@ public:
 
 	double get_available_funds() const { return m_accountFunds; }
 
+	void set_funds(int funds) { m_accountFunds = funds; }
+
+	void add_game(Game::GameId);
+
 private:
 	GameList m_ownedGames; // List of owned games.
 	double m_accountFunds; // The players available funds.
@@ -83,5 +89,18 @@ public:
 
 	// define the specific user type.
 	virtual const UserTypeId get_user_type() const override { return UserTypeId::kAdminUser; }
+};
+
+//--
+// Guest represents a user who is not in the system
+//--
+class Guest : public UserBase
+{
+public:
+	// inherit the constructor.
+	using UserBase::UserBase;
+
+	// define the specific user type.
+	virtual const UserTypeId get_user_type() const override { return UserTypeId::kGuest; }
 };
 

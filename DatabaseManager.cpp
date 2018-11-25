@@ -45,21 +45,54 @@ void DatabaseManager::load_data()
 			add_user(new AdminUser(un, pw, email));
 			break;
 		case UserTypeId::kPlayerUser :
-			add_user(new PlayerUser(un, pw, email));
+			PlayerUser* pUser = new PlayerUser(un, pw, email);
+			std::string games, game, funds;
+			std::getline(lineS, games, ',');
+			std::stringstream gamesS(games);
+			while (std::getline(gamesS, game, '|')) {
+				pUser->add_game(std::stoi(game));
+			}
+			std::getline(lineS, funds, ',');
+			pUser->set_funds(std::stoi(funds));
+			add_user(pUser);
 			break;
 		}
 	}
+
+	add_game(Game(4789, "Bounceback", "A platform puzzle game for PSP", 4.99, 12));
+	add_game(Game(5246, "Piecefall", "A tetris like 3d puzzle game for PS4", 9.99, 7));
 }
 
 void DatabaseManager::store_data()
 {
-	std::ofstream fout("data\\users.txt");
-	auto userVisitorLambda = [&fout](const UserBase& rUser) {
-		fout << static_cast<int>(rUser.get_user_type()) << "," << rUser.get_username() << "," 
-			<< rUser.get_password() << "," << rUser.get_email() << "\n";
+	std::ofstream fout_users("data\\users.txt");
+	auto userVisitorLambda = [&fout_users](const UserBase& rUser) {
+		fout_users << static_cast<int>(rUser.get_user_type()) << "," << rUser.get_username() << ","
+			<< rUser.get_password() << "," << rUser.get_email();
+		switch (rUser.get_user_type()) {
+		case UserTypeId::kAdminUser :
+			fout_users << "\n";
+			break;
+		case UserTypeId::kPlayerUser :
+			const PlayerUser* ppu(dynamic_cast<const PlayerUser*>(&rUser));
+			fout_users << ",";
+			for (auto const& i : ppu->get_game_list()) {
+				fout_users << i << "|";
+			}
+			fout_users << "," << ppu->get_available_funds() << "\n";
+			break;
+		}
 	};
 	visit_users(userVisitorLambda);
-	fout.close();
+	fout_users.close();
+
+	std::ofstream fout_games("data\\games.txt");
+	auto gameVisitorLambda = [&fout_games](const Game& rGame) {
+		fout_games << rGame.get_game_id() << "," << rGame.get_title() << "," << rGame.get_desc() << ","
+			<< rGame.get_price() << "," << rGame.get_age_rating() << "\n";
+	};
+	visit_games(gameVisitorLambda);
+	fout_games.close();
 }
 
 void DatabaseManager::add_user(UserBase* pUser)

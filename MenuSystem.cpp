@@ -90,6 +90,11 @@ int MenuSystem::run_admin_user_menu()
 	return 0;
 }
 
+void MenuSystem::add_game()
+{
+
+}
+
 int MenuSystem::run_player_user_menu()
 {
 	PlayerUser* pPlayerUser = static_cast<PlayerUser*>(m_pUser);
