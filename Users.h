@@ -12,8 +12,8 @@
 enum class UserTypeId
 {
 	kInvalid = 0
-	, kPlayerUser
-	, kAdminUser
+	, kPlayerUser = 1
+	, kAdminUser = 2
 };
 
 //--

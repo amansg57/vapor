@@ -173,5 +173,6 @@ int MenuSystem::run()
 		}
 	} while (result == 0);
 
+	DatabaseManager::instance().store_data();
 	return 0;
 }

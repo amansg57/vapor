@@ -4,6 +4,9 @@
 
 #include "DatabaseManager.h"
 #include <fstream>
+#include <sstream>
+#include <iostream>
+#include <string>
 
 DatabaseManager::DatabaseManager()
 {
@@ -27,27 +30,36 @@ DatabaseManager& DatabaseManager::instance()
 
 void DatabaseManager::load_data()
 {
-	// For test purposes I shall populate the database manually here.
-	// In your applications we want you to load data (and save) the contents of the database.
-
-	// add some admin users.
-	add_user(new AdminUser("davem", "12345", "d.r.moore@shu.ac.uk"));
-	add_user(new AdminUser("pascalev", "54321", "p.vacher@shu.ac.uk"));
-
-	// add some players
-	add_user(new PlayerUser("frank", "frank12345", "frank@unknown.com"));
-	add_user(new PlayerUser("jake", "jake12345", "jake@unknown.com"));
-	add_user(new PlayerUser("andrew", "andrew12345", "andrew@unknown.com"));
-	add_user(new PlayerUser("martin", "martin12345", "martin@unknown.com"));
-
-	// add some games.
-	add_game(Game(4789, "Bounceback", "A platform puzzle game for PSP"));
-	add_game(Game(5246, "Piecefall", "A tetris like 3d puzzle game for PS4"));
+	std::ifstream fin("data\\users.txt");
+	std::string line;
+	while (std::getline(fin, line)) {
+		std::stringstream lineS(line);
+		std::string typeS, un, pw, email;
+		std::getline(lineS, typeS, ',');
+		UserTypeId type(static_cast<UserTypeId>(std::stoi(typeS)));
+		std::getline(lineS, un, ',');
+		std::getline(lineS, pw, ',');
+		std::getline(lineS, email, ',');
+		switch (type) {
+		case UserTypeId::kAdminUser :
+			add_user(new AdminUser(un, pw, email));
+			break;
+		case UserTypeId::kPlayerUser :
+			add_user(new PlayerUser(un, pw, email));
+			break;
+		}
+	}
 }
 
 void DatabaseManager::store_data()
 {
-	// You need a mechinsm for storing data here
+	std::ofstream fout("data\\users.txt");
+	auto userVisitorLambda = [&fout](const UserBase& rUser) {
+		fout << static_cast<int>(rUser.get_user_type()) << "," << rUser.get_username() << "," 
+			<< rUser.get_password() << "," << rUser.get_email() << "\n";
+	};
+	visit_users(userVisitorLambda);
+	fout.close();
 }
 
 void DatabaseManager::add_user(UserBase* pUser)
