@@ -151,7 +151,7 @@ void MenuSystem::modify_game()
 	else {
 		int result = 0;
 		do {
-			std::cout << "Modify " << pg->get_title;
+			std::cout << "Modify " << pg->get_title();
 			std::cout << "(1) Change Title\n";
 			std::cout << "(2) Change Description\n";
 			std::cout << "(3) Change Price\n";
@@ -190,7 +190,7 @@ void MenuSystem::modify_game()
 				std::cout << "Enter new price: ";
 				std::cin >> price;
 				pg->set_price(price);
-				std::cout << "New price set to £" << price << "\n";
+				std::cout << "New price set to " << price << "\n";
 				break;
 			}
 			case '4': 
