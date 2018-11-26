@@ -144,3 +144,8 @@ Game* DatabaseManager::find_game(const Game::GameId gameid)
 		return nullptr;
 	}
 }
+
+void DatabaseManager::remove_game(const Game::GameId gameid)
+{
+	m_games.erase(gameid);
+}

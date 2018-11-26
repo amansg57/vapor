@@ -42,6 +42,9 @@ public:
 	// Finds a game by id, returns nullptr if the game is not found.
 	Game* find_game(const Game::GameId gameid);
 
+	// Removes a game from the container by id.
+	void remove_game(const Game::GameId gameid);
+
 	// iterating games using visitor pattern
 	template<typename Visitor> void visit_games(Visitor& func)
 	{

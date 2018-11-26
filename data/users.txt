@@ -1,8 +1,8 @@
-1,aman,asdf,amansg57@gmail.com,,0
-1,andrew,andrew12345,andrew@unknown.com,,0
+1,aman,asdf,amansg57@gmail.com,,0,23
+1,andrew,andrew12345,andrew@unknown.com,,0,17
 2,davem,12345,d.r.moore@shu.ac.uk
-1,frank,frank12345,frank@unknown.com,,0
-1,jake,jake12345,jake@unknown.com,,0
-1,martin,martin12345,martin@unknown.com,,0
+1,frank,frank12345,frank@unknown.com,,0,14
+1,jake,jake12345,jake@unknown.com,,0,11
+1,martin,martin12345,martin@unknown.com,,0,20
 2,naxam,qwerasdf,naxam17@gmail.com
 2,pascalev,54321,p.vacher@shu.ac.uk

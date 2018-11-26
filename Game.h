@@ -26,11 +26,17 @@ public:
 
 	const std::string get_desc() const { return m_description; }
 
-	void set_title(const std::string& val) { m_title = val; }
-
 	const double get_price() const { return m_price; }
 
 	const int get_age_rating() const { return m_age_rating; }
+
+	void set_title(const std::string& val) { m_title = val; }
+
+	void set_desc(const std::string& val) { m_description = val; }
+
+	void set_price(const double& val) { m_price = val; }
+
+	void set_age_rating(const int& val) { m_age_rating = val; }
 
 private:
 	const GameId m_gameId;	// Numerical identifier for a game  (unique key).

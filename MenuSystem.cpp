@@ -14,7 +14,7 @@ MenuSystem& MenuSystem::instance()
 void MenuSystem::list_all_games() const
 {
 	auto gameVisitorLambda = [](const Game& rGame) {
-		std::cout << rGame.get_title() << "\n";
+		std::cout << rGame.get_title() << " (" << rGame.get_game_id() << ")" << "\n";
 	};
 
 	DatabaseManager::instance().visit_games(gameVisitorLambda);
@@ -69,6 +69,7 @@ int MenuSystem::run_admin_user_menu()
 		std::cout << "(2) List All Users\n";
 		std::cout << "(3) Add Game\n";
 		std::cout << "(4) Add User\n";
+		std::cout << "(5) Modify Game\n";
 		std::cout << "(q) Logout\n";
 
 		char option;
@@ -80,6 +81,7 @@ int MenuSystem::run_admin_user_menu()
 		case '2': list_all_users(); break;
 		case '3': add_game(); break;
 		case '4': add_user(); break;
+		case '5': modify_game(); break;
 		case 'q': result = -1; break;
 		default:  std::cout << "INAVLID OPTION\n"; break;
 		}
@@ -134,6 +136,81 @@ void MenuSystem::add_user()
 		std::cin >> age;
 		DatabaseManager::instance().add_user(new PlayerUser(un, pw, email, age));
 		break;
+	}
+}
+
+void MenuSystem::modify_game()
+{
+	int id;
+	std::cout << "Please enter the id of the game you wish to remove: ";
+	std::cin >> id;
+	Game* pg = DatabaseManager::instance().find_game(id);
+	if (pg == nullptr) {
+		std::cout << "That id does not exist.";
+	}
+	else {
+		int result = 0;
+		do {
+			std::cout << "Modify " << pg->get_title;
+			std::cout << "(1) Change Title\n";
+			std::cout << "(2) Change Description\n";
+			std::cout << "(3) Change Price\n";
+			std::cout << "(4) Change Age Rating\n";
+			std::cout << "(5) Remove Game\n";
+			std::cout << "(q) Go Back\n";
+
+			char option;
+			std::cin >> option;
+
+			switch (option)
+			{
+			case '1': 
+			{
+				std::string title;
+				std::cin.ignore();
+				std::cout << "Enter new title: ";
+				std::getline(std::cin, title);
+				pg->set_title(title);
+				std::cout << "New title set to " << title << "\n";
+				break;
+			}
+			case '2': 
+			{
+				std::string desc;
+				std::cin.ignore();
+				std::cout << "Enter new description: ";
+				std::getline(std::cin, desc);
+				pg->set_desc(desc);
+				std::cout << "New description set to \"" << desc << "\"" << "\n";
+				break;
+			}
+			case '3': 
+			{
+				double price;
+				std::cout << "Enter new price: ";
+				std::cin >> price;
+				pg->set_price(price);
+				std::cout << "New price set to £" << price << "\n";
+				break;
+			}
+			case '4': 
+			{
+				int age_rating;
+				std::cout << "Enter new age rating: ";
+				std::cin >> age_rating;
+				pg->set_age_rating(age_rating);
+				std::cout << "New age rating set to " << age_rating << "\n";
+				break;
+			}
+			case '5': 
+				std::cout << pg->get_title() << " has been removed. \n";
+				DatabaseManager::instance().remove_game(id);
+				result = -1;
+				break;
+			case 'q': result = -1; break;
+			default:  std::cout << "INAVLID OPTION\n"; break;
+			}
+		} while (result == 0);
 	}
 }
 
