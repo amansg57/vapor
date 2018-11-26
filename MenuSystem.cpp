@@ -3,6 +3,7 @@
 //Student number: 28012198
 
 #include "MenuSystem.h"
+#include "UserTypeId.h"
 
 MenuSystem& MenuSystem::instance()
 {
@@ -77,8 +78,8 @@ int MenuSystem::run_admin_user_menu()
 		{
 		case '1': list_all_games(); break;
 		case '2': list_all_users(); break;
-		case '3': std::cout << "TODO\n"; break;
-		case '4': std::cout << "TODO\n"; break;
+		case '3': add_game(); break;
+		case '4': add_user(); break;
 		case 'q': result = -1; break;
 		default:  std::cout << "INAVLID OPTION\n"; break;
 		}
@@ -92,7 +93,45 @@ int MenuSystem::run_admin_user_menu()
 
 void MenuSystem::add_game()
 {
+	int id, age_rating;
+	double price;
+	std::string name, desc;
+	std::cout << "Enter a unique numeric id for the new game: ";
+	std::cin >> id;
+	std::cin.ignore();
+	std::cout << "Enter a name for the new game: ";
+	std::getline(std::cin, name);
+	std::cout << "Enter a short description for the game: ";
+	std::getline(std::cin, desc);
+	std::cout << "Enter a price for the game: ";
+	std::cin >> price;
+	std::cout << "Enter an age rating for the game: ";
+	std::cin >> age_rating;
+	Game newGame = Game(id, name, desc, price, age_rating);
+	DatabaseManager::instance().add_game(newGame);
+	std::cout << "Game added successfully\n";
+}
 
+void MenuSystem::add_user()
+{
+	std::string un, pw, email;
+	int userType;
+	std::cout << "What type of user are you creating? 1 for player, 2 for admin, 3 for gamestudio: ";
+	std::cin >> userType;
+	std::cout << "Username: ";
+	std::cin >> un;
+	std::cout << "Email: ";
+	std::cin >> email;
+	std::cout << "Password: ";
+	std::cin >> pw;
+	switch (static_cast<UserTypeId>(userType)) {
+	case UserTypeId::kAdminUser :
+		DatabaseManager::instance().add_user(new AdminUser(un, pw, email));
+		break;
+	case UserTypeId::kPlayerUser:
+		DatabaseManager::instance().add_user(new PlayerUser(un, pw, email));
+		break;
+	}
 }
 
 int MenuSystem::run_player_user_menu()

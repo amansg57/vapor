@@ -6,17 +6,7 @@
 #include <string>
 #include <list>
 #include "Game.h"
-
-//--
-// UserTypeId represents an identifier for the specific user type.
-//--
-enum class UserTypeId
-{
-	kInvalid = 0
-	, kPlayerUser = 1
-	, kAdminUser = 2
-	, kGuest = 3
-};
+#include "UserTypeId.h"
 
 //--
 // UserBase represents a user base class for the system.

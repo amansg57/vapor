@@ -34,6 +34,8 @@ private:
 
 	void add_game();
 
+	void add_user();
+
 private:
 	UserBase* m_pUser = nullptr;  // the currently logged in user.
 };
