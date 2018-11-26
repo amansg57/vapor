@@ -142,7 +142,7 @@ void MenuSystem::add_user()
 void MenuSystem::modify_game()
 {
 	int id;
-	std::cout << "Please enter the id of the game you wish to remove: ";
+	std::cout << "Please enter the id of the game you wish to modify: ";
 	std::cin >> id;
 	Game* pg = DatabaseManager::instance().find_game(id);
 	if (pg == nullptr) {
@@ -151,7 +151,7 @@ void MenuSystem::modify_game()
 	else {
 		int result = 0;
 		do {
-			std::cout << "Modify " << pg->get_title();
+			std::cout << "Modify " << pg->get_title() << "\n";
 			std::cout << "(1) Change Title\n";
 			std::cout << "(2) Change Description\n";
 			std::cout << "(3) Change Price\n";
@@ -190,7 +190,7 @@ void MenuSystem::modify_game()
 				std::cout << "Enter new price: ";
 				std::cin >> price;
 				pg->set_price(price);
-				std::cout << "New price set to " << price << "\n";
+				std::cout << "New price set to \x9C" << price << "\n";
 				break;
 			}
 			case '4': 
@@ -234,9 +234,9 @@ int MenuSystem::run_player_user_menu()
 		switch (option)
 		{
 		case '1': list_all_games(); break;
-		case '2': std::cout << "TODO\n"; break;
+		case '2': list_user_games(pPlayerUser); break;
 		case '3': std::cout << "TODO\n"; break;
-		case '4': std::cout << "TODO\n"; break;
+		case '4': add_funds(pPlayerUser); break;
 		case 'q': result = -1; break;
 		default:  std::cout << "INAVLID OPTION\n"; break;
 		}
@@ -246,6 +246,26 @@ int MenuSystem::run_player_user_menu()
 	m_pUser = nullptr;
 
 	return 0;
+}
+
+void MenuSystem::list_user_games(PlayerUser* ppu) {
+	for (auto const& gameid : ppu->get_game_list()) {
+		Game* pg = DatabaseManager::instance().find_game(gameid);
+		std::cout << pg->get_title() << " (" << pg->get_game_id() << ")\n";
+	}
+}
+
+void MenuSystem::buy_game(PlayerUser* ppu) {
+
+}
+
+void MenuSystem::add_funds(PlayerUser* ppu) {
+	double addAmount, currentFunds(ppu->get_available_funds());
+	std::cout << "Current Balance: \x9C" << currentFunds << "\n";
+	std::cout << "How much would you like to top up by? ";
+	std::cin >> addAmount;
+	ppu->set_funds(currentFunds + addAmount);
+	std::cout << "\x9C" << addAmount << " has been added to your account. Your new total is \x9C" << currentFunds + addAmount << "\n";
 }
 
 int MenuSystem::run_unknown_user_menu()

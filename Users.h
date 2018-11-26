@@ -63,7 +63,7 @@ public:
 
 	const double get_available_funds() const { return m_accountFunds; }
 
-	void set_funds(int funds) { m_accountFunds = funds; }
+	void set_funds(double funds) { m_accountFunds = funds; }
 
 	void add_game(Game::GameId);
 

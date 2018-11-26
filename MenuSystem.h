@@ -38,6 +38,12 @@ private:
 
 	void modify_game();
 
+	void list_user_games(PlayerUser*);
+
+	void buy_game(PlayerUser*);
+
+	void add_funds(PlayerUser*);
+
 private:
 	UserBase* m_pUser = nullptr;  // the currently logged in user.
 };

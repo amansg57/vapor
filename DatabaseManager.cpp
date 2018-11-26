@@ -84,8 +84,8 @@ void DatabaseManager::store_data()
 		case UserTypeId::kPlayerUser :
 			const PlayerUser* ppu(dynamic_cast<const PlayerUser*>(&rUser));
 			fout_users << ",";
-			for (auto const& i : ppu->get_game_list()) {
-				fout_users << i << "|";
+			for (auto const& gameid : ppu->get_game_list()) {
+				fout_users << gameid << "|";
 			}
 			fout_users << "," << ppu->get_available_funds() << "," << ppu->get_age() << "\n";
 			break;
