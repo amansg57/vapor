@@ -36,6 +36,6 @@ private:
 	const GameId m_gameId;	// Numerical identifier for a game  (unique key).
 	std::string m_title; // The game title
 	std::string m_description; // Some information about the game.
-	double m_price;
-	int m_age_rating;
+	double m_price; // Price of the game
+	int m_age_rating; // Age rating of the game
 };

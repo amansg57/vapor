@@ -7,6 +7,7 @@
 #include <sstream>
 #include <iostream>
 #include <string>
+#include <vector>
 
 DatabaseManager::DatabaseManager()
 {
@@ -30,37 +31,44 @@ DatabaseManager& DatabaseManager::instance()
 
 void DatabaseManager::load_data()
 {
-	std::ifstream fin("data\\users.txt");
+	std::ifstream fin_users("data\\users.txt");
 	std::string line;
-	while (std::getline(fin, line)) {
+	while (std::getline(fin_users, line)) {
+		std::string element;
 		std::stringstream lineS(line);
-		std::string typeS, un, pw, email;
-		std::getline(lineS, typeS, ',');
-		UserTypeId type(static_cast<UserTypeId>(std::stoi(typeS)));
-		std::getline(lineS, un, ',');
-		std::getline(lineS, pw, ',');
-		std::getline(lineS, email, ',');
-		switch (type) {
-		case UserTypeId::kAdminUser :
-			add_user(new AdminUser(un, pw, email));
+		std::vector<std::string> elements;
+		while (std::getline(lineS, element, ',')) {
+			elements.push_back(element);
+		}
+		switch (static_cast<UserTypeId>(std::stoi(elements.at(0)))) {
+		case UserTypeId::kAdminUser:
+			add_user(new AdminUser(elements.at(1), elements.at(2), elements.at(3)));
 			break;
-		case UserTypeId::kPlayerUser :
-			PlayerUser* pUser = new PlayerUser(un, pw, email);
-			std::string games, game, funds;
-			std::getline(lineS, games, ',');
-			std::stringstream gamesS(games);
+		case UserTypeId::kPlayerUser:
+			PlayerUser* pUser = new PlayerUser(elements.at(1), elements.at(2), elements.at(3), std::stoi(elements.at(6)));
+			std::string game;
+			std::stringstream gamesS(elements.at(4));
 			while (std::getline(gamesS, game, '|')) {
 				pUser->add_game(std::stoi(game));
 			}
-			std::getline(lineS, funds, ',');
-			pUser->set_funds(std::stoi(funds));
+			pUser->set_funds(std::stoi(elements.at(5)));
 			add_user(pUser);
 			break;
 		}
 	}
+	fin_users.close();
 
-	add_game(Game(4789, "Bounceback", "A platform puzzle game for PSP", 4.99, 12));
-	add_game(Game(5246, "Piecefall", "A tetris like 3d puzzle game for PS4", 9.99, 7));
+	std::ifstream fin_games("data\\games.txt");
+	while (std::getline(fin_games, line)) {
+		std::string element;
+		std::stringstream lineS(line);
+		std::vector<std::string> elements;
+		while (std::getline(lineS, element, ',')) {
+			elements.push_back(element);
+		}
+		add_game(Game(std::stoi(elements.at(0)), elements.at(1), elements.at(2), std::stod(elements.at(3)), std::stoi(elements.at(4))));
+	}
+	fin_games.close();
 }
 
 void DatabaseManager::store_data()
@@ -79,7 +87,7 @@ void DatabaseManager::store_data()
 			for (auto const& i : ppu->get_game_list()) {
 				fout_users << i << "|";
 			}
-			fout_users << "," << ppu->get_available_funds() << "\n";
+			fout_users << "," << ppu->get_available_funds() << "," << ppu->get_age() << "\n";
 			break;
 		}
 	};

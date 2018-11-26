@@ -129,7 +129,10 @@ void MenuSystem::add_user()
 		DatabaseManager::instance().add_user(new AdminUser(un, pw, email));
 		break;
 	case UserTypeId::kPlayerUser:
-		DatabaseManager::instance().add_user(new PlayerUser(un, pw, email));
+		int age;
+		std::cout << "Age: ";
+		std::cin >> age;
+		DatabaseManager::instance().add_user(new PlayerUser(un, pw, email, age));
 		break;
 	}
 }
