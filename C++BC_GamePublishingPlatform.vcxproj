@@ -116,6 +116,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DatabaseManager.cpp" />
+    <ClCompile Include="DateTime.cpp" />
     <ClCompile Include="MainApplication.cpp" />
     <ClCompile Include="MenuSystem.cpp" />
     <ClCompile Include="Users.cpp" />
@@ -124,6 +125,7 @@
     <ClInclude Include="DatabaseManager.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="MenuSystem.h" />
+    <ClInclude Include="DateTime.h" />
     <ClInclude Include="Users.h" />
     <ClInclude Include="UserTypeId.h" />
   </ItemGroup>
