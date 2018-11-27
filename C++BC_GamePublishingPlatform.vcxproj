@@ -126,7 +126,9 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="MenuSystem.h" />
     <ClInclude Include="DateTime.h" />
+    <ClInclude Include="Play.h" />
     <ClInclude Include="Purchase.h" />
+    <ClInclude Include="StatisticData.h" />
     <ClInclude Include="Users.h" />
     <ClInclude Include="UserTypeId.h" />
   </ItemGroup>

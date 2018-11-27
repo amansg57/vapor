@@ -18,9 +18,7 @@ public:
 		, _pdateTime(new DateTime(dateTimeString))
 	{}
 	virtual ~StatisticData()
-	{
-		delete _pdateTime;
-	}
+	{}
 
 	const std::string& get_player() const { return _playerUsername; }
 	const Game::GameId& get_gameid() const { return _gameid; }

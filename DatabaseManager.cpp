@@ -52,7 +52,7 @@ void DatabaseManager::load_data()
 			while (std::getline(gamesS, game, '|')) {
 				pUser->add_game(std::stoi(game));
 			}
-			pUser->set_funds(std::stoi(elements.at(5)));
+			pUser->set_funds(std::stod(elements.at(5)));
 			add_user(pUser);
 			break;
 		}
@@ -105,6 +105,25 @@ void DatabaseManager::store_data()
 	};
 	visit_games(gameVisitorLambda);
 	fout_games.close();
+
+	// Store Plays
+	std::ofstream fout_plays("data\\plays.txt");
+	auto playVisitorLambda = [&fout_plays](const Play& rPlay) {
+		fout_plays << rPlay.get_player() << "," << rPlay.get_gameid() << "," << rPlay.get_length() << ","
+			<< rPlay.get_dateTime()->to_string() << "\n";
+	};
+	visit_plays(playVisitorLambda);
+	fout_plays.close();
+
+	// Store Purchases
+	std::ofstream fout_purchases("data\\purchases.txt");
+	auto purchaseVisitorLambda = [&fout_purchases](const Purchase& rPurchase) {
+		fout_purchases << rPurchase.get_player() << "," << rPurchase.get_gameid() << ","
+			<< rPurchase.get_price() << "," << rPurchase.get_dateTime()->to_string() << "\n";
+	};
+	visit_purchases(purchaseVisitorLambda);
+	fout_purchases.close();
+
 }
 
 void DatabaseManager::add_user(UserBase* pUser)
@@ -152,4 +171,24 @@ Game* DatabaseManager::find_game(const Game::GameId gameid)
 void DatabaseManager::remove_game(const Game::GameId gameid)
 {
 	m_games.erase(gameid);
+}
+
+void DatabaseManager::add_play(const std::string& username, const Game::GameId& gameid, const int& length)
+{
+	m_plays.push_back(Play(username, gameid, length));
+}
+
+void DatabaseManager::add_play(const std::string& username, const Game::GameId& gameid, const int& length, const std::string& dateTimeStr)
+{
+	m_plays.push_back(Play(username, gameid, length, dateTimeStr));
+}
+
+void DatabaseManager::add_purchase(const std::string& username, const Game::GameId& gameid, const double& price)
+{
+	m_purchases.push_back(Purchase(username, gameid, price));
+}
+
+void DatabaseManager::add_purchase(const std::string& username, const Game::GameId& gameid, const double& price, const std::string& dateTimeStr)
+{
+	m_purchases.push_back(Purchase(username, gameid, price, dateTimeStr));
 }

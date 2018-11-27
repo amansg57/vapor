@@ -83,7 +83,7 @@ int MenuSystem::run_admin_user_menu()
 		case '4': add_user(); break;
 		case '5': modify_game(); break;
 		case 'q': result = -1; break;
-		default:  std::cout << "INAVLID OPTION\n"; break;
+		default:  std::cout << "INVALID OPTION\n"; break;
 		}
 	} while (result == 0);
 
@@ -208,7 +208,7 @@ void MenuSystem::modify_game()
 				result = -1;
 				break;
 			case 'q': result = -1; break;
-			default:  std::cout << "INAVLID OPTION\n"; break;
+			default:  std::cout << "INVALID OPTION\n"; break;
 			}
 		} while (result == 0);
 	}
@@ -226,6 +226,7 @@ int MenuSystem::run_player_user_menu()
 		std::cout << "(2) List My Games\n";
 		std::cout << "(3) Buy Game\n";
 		std::cout << "(4) Add Funds\n";
+		std::cout << "(5) Play Game\n";
 		std::cout << "(q) Logout\n";
 
 		char option;
@@ -235,10 +236,11 @@ int MenuSystem::run_player_user_menu()
 		{
 		case '1': list_all_games(); break;
 		case '2': list_user_games(pPlayerUser); break;
-		case '3': std::cout << "TODO\n"; break;
+		case '3': buy_game(pPlayerUser); break;
 		case '4': add_funds(pPlayerUser); break;
+		case '5': play_game(pPlayerUser); break;
 		case 'q': result = -1; break;
-		default:  std::cout << "INAVLID OPTION\n"; break;
+		default:  std::cout << "INVALID OPTION\n"; break;
 		}
 	} while (result == 0);
 
@@ -256,7 +258,28 @@ void MenuSystem::list_user_games(PlayerUser* ppu) {
 }
 
 void MenuSystem::buy_game(PlayerUser* ppu) {
-
+	double gameid;
+	std::cout << "Enter the id of the game you wish to buy: ";
+	std::cin >> gameid;
+	Game* pg = DatabaseManager::instance().find_game(gameid);
+	if (pg != nullptr) {
+		if (!ppu->does_user_own_game(gameid)) {
+			if (ppu->get_available_funds() >= pg->get_price()) {
+				ppu->add_game(gameid);
+				ppu->set_funds(ppu->get_available_funds() - pg->get_price());
+				DatabaseManager::instance().add_purchase(ppu->get_username(), gameid, pg->get_price());
+			}
+			else {
+				std::cout << "You do not have enough funds.\n";
+			}
+		}
+		else {
+			std::cout << "You already own that game.\n";
+		}
+	}
+	else {
+		std::cout << "That is not a valid game id.\n";
+	}
 }
 
 void MenuSystem::add_funds(PlayerUser* ppu) {
@@ -266,6 +289,10 @@ void MenuSystem::add_funds(PlayerUser* ppu) {
 	std::cin >> addAmount;
 	ppu->set_funds(currentFunds + addAmount);
 	std::cout << "\x9C" << addAmount << " has been added to your account. Your new total is \x9C" << currentFunds + addAmount << "\n";
+}
+
+void MenuSystem::play_game(PlayerUser* ppu) {
+
 }
 
 int MenuSystem::run_unknown_user_menu()
@@ -286,7 +313,7 @@ int MenuSystem::run_unknown_user_menu()
 	case '1': list_all_games(); break;
 	case '2': run_login_screen(); break;
 	case 'q': result = -1;  break;
-	default:  std::cout << "INAVLID OPTION\n"; break;
+	default:  std::cout << "INVALID OPTION\n"; break;
 	}
 
 	return result;

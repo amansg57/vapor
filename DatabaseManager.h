@@ -53,6 +53,26 @@ public:
 		for (auto it : m_games) { func(it.second); }
 	}
 
+	// Adds plays, new play and importing play from file
+	void add_play(const std::string& username, const Game::GameId& gameid, const int& length);
+	void add_play(const std::string& username, const Game::GameId& gameid, const int& length, const std::string& dateTimeStr);
+
+	// iterating plays using visitor pattern
+	template<typename Visitor> void visit_plays(Visitor& func)
+	{
+		for (auto it : m_plays) { func(it); }
+	}
+
+	// Adds purchases, new purchase and importing purchase from file
+	void add_purchase(const std::string& username, const Game::GameId& gameid, const double& price);
+	void add_purchase(const std::string& username, const Game::GameId& gameid, const double& price, const std::string& dateTimeStr);
+
+	// iterating purchases using visitor pattern
+	template<typename Visitor> void visit_purchases(Visitor& func)
+	{
+		for (auto it : m_purchases) { func(it); }
+	}
+
 private:
 	// Constructors are private for singleton pattern.
 	DatabaseManager();

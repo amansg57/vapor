@@ -44,6 +44,8 @@ private:
 
 	void add_funds(PlayerUser*);
 
+	void play_game(PlayerUser*);
+
 private:
 	UserBase* m_pUser = nullptr;  // the currently logged in user.
 };

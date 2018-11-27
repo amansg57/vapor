@@ -7,19 +7,18 @@
 
 DateTime::DateTime() {
 	time_t t(time(NULL));
+	tm timeinfo;
 	localtime_s(&timeinfo, &t);
+	year = timeinfo.tm_year + 1900;
+	month = timeinfo.tm_mon + 1;
+	day = timeinfo.tm_mday;
+	hours = timeinfo.tm_hour;
+	minutes = timeinfo.tm_min;
+	seconds = timeinfo.tm_sec;
 }
 
 DateTime::DateTime(const std::string& str) {
-	timeinfo = { 0 };
-	int year, month, day, hours, minutes, seconds;
 	sscanf_s(str.c_str(), "%d/%d/%d %d:%d:%d", &year, &month, &day, &hours, &minutes, &seconds);
-	timeinfo.tm_year = year - 1900;
-	timeinfo.tm_mon = month - 1;
-	timeinfo.tm_mday = day;
-	timeinfo.tm_hour = hours;
-	timeinfo.tm_min = minutes;
-	timeinfo.tm_sec = seconds;
 }
 
 const std::string DateTime::to_string() {

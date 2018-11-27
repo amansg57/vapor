@@ -14,15 +14,15 @@ public:
 	DateTime();
 	DateTime(const std::string&);
 
-	const int& get_year() const { return timeinfo.tm_year + 1900; }
-	int get_month() { return timeinfo.tm_mon + 1; }
-	const int& get_day() const { return timeinfo.tm_mday; }
-	const int& get_hours() const { return timeinfo.tm_hour; }
-	const int& get_minutes() const { return timeinfo.tm_min; }
-	const int& get_seconds() const { return timeinfo.tm_sec; }
+	const int& get_year() const { return year; }
+	const int& get_month() { return month; }
+	const int& get_day() const { return day; }
+	const int& get_hours() const { return hours; }
+	const int& get_minutes() const { return minutes; }
+	const int& get_seconds() const { return seconds; }
 	const std::string to_string();
 
 private:
-	tm timeinfo;
+	int year, month, day, hours, minutes, seconds;
 	std::string addLeadingZero(const int&);
 };
