@@ -5,6 +5,8 @@
 
 #include "Game.h"
 #include "Users.h"
+#include "Play.h"
+#include "Purchase.h"
 
 #include <map>
 
@@ -61,9 +63,12 @@ private:
 	// Types
 	using UserContainer = std::map<UserBase::Username, UserBase*>;
 	using GameContainer = std::map<Game::GameId, Game>;
+	using PlayContainer = std::list<Play>;
+	using PurchaseContainer = std::list<Purchase>;
 
 	UserContainer m_users;
 	GameContainer m_games;
-
+	PlayContainer m_plays;
+	PurchaseContainer m_purchases;
 };
 

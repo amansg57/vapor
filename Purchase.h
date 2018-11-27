@@ -6,11 +6,11 @@
 class Purchase : public StatisticData
 {
 public:
-	Purchase(const std::string& name, const int& gameid, const double& price)
+	Purchase(const std::string& name, const Game::GameId& gameid, const double& price)
 		: StatisticData(name, gameid)
 		, _price(price)
 	{}
-	Purchase(const std::string& name, const int& gameid, const double& price, const std::string& dateTimeString)
+	Purchase(const std::string& name, const Game::GameId& gameid, const double& price, const std::string& dateTimeString)
 		: StatisticData(name, gameid, dateTimeString)
 		, _price(price)
 	{}

@@ -6,11 +6,11 @@
 class Play : public StatisticData
 {
 public:
-	Play(const std::string& name, const int& gameid, const int& price)
+	Play(const std::string& name, const Game::GameId& gameid, const int& price)
 		: StatisticData(name, gameid)
 		, _length(price)
 	{}
-	Play(const std::string& name, const int& gameid, const int& price, const std::string& dateTimeString)
+	Play(const std::string& name, const Game::GameId& gameid, const int& price, const std::string& dateTimeString)
 		: StatisticData(name, gameid, dateTimeString)
 		, _length(price)
 	{}
