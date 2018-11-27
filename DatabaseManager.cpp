@@ -71,6 +71,32 @@ void DatabaseManager::load_data()
 		add_game(Game(std::stoi(elements.at(0)), elements.at(1), elements.at(2), std::stod(elements.at(3)), std::stoi(elements.at(4))));
 	}
 	fin_games.close();
+
+	// Load Plays
+	std::ifstream fin_plays("data\\plays.txt");
+	while (std::getline(fin_plays, line)) {
+		std::string element;
+		std::stringstream lineS(line);
+		std::vector<std::string> elements;
+		while (std::getline(lineS, element, ',')) {
+			elements.push_back(element);
+		}
+		add_play(elements.at(0), std::stoi(elements.at(1)), std::stoi(elements.at(2)), elements.at(3));
+	}
+	fin_plays.close();
+
+	// Load Purchases
+	std::ifstream fin_purchases("data\\purchases.txt");
+	while (std::getline(fin_purchases, line)) {
+		std::string element;
+		std::stringstream lineS(line);
+		std::vector<std::string> elements;
+		while (std::getline(lineS, element, ',')) {
+			elements.push_back(element);
+		}
+		add_purchase(elements.at(0), std::stoi(elements.at(1)), std::stod(elements.at(2)), elements.at(3));
+	}
+	fin_purchases.close();
 }
 
 void DatabaseManager::store_data()

@@ -15,7 +15,7 @@ public:
 		, _length(length)
 	{}
 
-	const double& get_length() const { return _length; }
+	const int& get_length() const { return _length; }
 
 private:
 	const int _length; // Length of time the user played in minutes

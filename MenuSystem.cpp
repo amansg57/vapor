@@ -258,7 +258,7 @@ void MenuSystem::list_user_games(PlayerUser* ppu) {
 }
 
 void MenuSystem::buy_game(PlayerUser* ppu) {
-	double gameid;
+	Game::GameId gameid;
 	std::cout << "Enter the id of the game you wish to buy: ";
 	std::cin >> gameid;
 	Game* pg = DatabaseManager::instance().find_game(gameid);
@@ -268,6 +268,7 @@ void MenuSystem::buy_game(PlayerUser* ppu) {
 				ppu->add_game(gameid);
 				ppu->set_funds(ppu->get_available_funds() - pg->get_price());
 				DatabaseManager::instance().add_purchase(ppu->get_username(), gameid, pg->get_price());
+				std::cout << "You have purchased " << pg->get_title() << "!\n";
 			}
 			else {
 				std::cout << "You do not have enough funds.\n";
@@ -292,7 +293,25 @@ void MenuSystem::add_funds(PlayerUser* ppu) {
 }
 
 void MenuSystem::play_game(PlayerUser* ppu) {
-
+	Game::GameId gameid;
+	std::cout << "Enter the id of the game you wish to play: ";
+	std::cin >> gameid;
+	Game* pg = DatabaseManager::instance().find_game(gameid);
+	if (pg != nullptr) {
+		if (ppu->does_user_own_game(gameid)) {
+			int duration;
+			std::cout << "How long are you playing for? (in minutes): ";
+			std::cin >> duration;
+			std::cout << "I hope you enjoyed your fun and interactive gaming experience.\n";
+			DatabaseManager::instance().add_play(ppu->get_username(), gameid, duration);
+		}
+		else {
+			std::cout << "You don't own that game.";
+		}
+	}
+	else {
+		std::cout << "That is not a valid game id.\n";
+	}
 }
 
 int MenuSystem::run_unknown_user_menu()
