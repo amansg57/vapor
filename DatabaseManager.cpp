@@ -31,6 +31,7 @@ DatabaseManager& DatabaseManager::instance()
 
 void DatabaseManager::load_data()
 {
+	// Load Users
 	std::ifstream fin_users("data\\users.txt");
 	std::string line;
 	while (std::getline(fin_users, line)) {
@@ -58,6 +59,7 @@ void DatabaseManager::load_data()
 	}
 	fin_users.close();
 
+	// Load Games
 	std::ifstream fin_games("data\\games.txt");
 	while (std::getline(fin_games, line)) {
 		std::string element;
@@ -73,6 +75,7 @@ void DatabaseManager::load_data()
 
 void DatabaseManager::store_data()
 {
+	// Store Users
 	std::ofstream fout_users("data\\users.txt");
 	auto userVisitorLambda = [&fout_users](const UserBase& rUser) {
 		fout_users << static_cast<int>(rUser.get_user_type()) << "," << rUser.get_username() << ","
@@ -94,6 +97,7 @@ void DatabaseManager::store_data()
 	visit_users(userVisitorLambda);
 	fout_users.close();
 
+	// Store Games
 	std::ofstream fout_games("data\\games.txt");
 	auto gameVisitorLambda = [&fout_games](const Game& rGame) {
 		fout_games << rGame.get_game_id() << "," << rGame.get_title() << "," << rGame.get_desc() << ","

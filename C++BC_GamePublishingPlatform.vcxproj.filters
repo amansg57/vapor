@@ -50,5 +50,8 @@
     <ClInclude Include="DateTime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Purchase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
