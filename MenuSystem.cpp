@@ -70,6 +70,7 @@ int MenuSystem::run_admin_user_menu()
 		std::cout << "(3) Add Game\n";
 		std::cout << "(4) Add User\n";
 		std::cout << "(5) Modify Game\n";
+		std::cout << "(6) Access Statistics\n";
 		std::cout << "(q) Logout\n";
 
 		char option;
@@ -82,6 +83,7 @@ int MenuSystem::run_admin_user_menu()
 		case '3': add_game(); break;
 		case '4': add_user(); break;
 		case '5': modify_game(); break;
+		case '6': stats_menu(); break;
 		case 'q': result = -1; break;
 		default:  std::cout << "INVALID OPTION\n"; break;
 		}
@@ -264,23 +266,20 @@ void MenuSystem::buy_game(PlayerUser* ppu) {
 	Game* pg = DatabaseManager::instance().find_game(gameid);
 	if (pg != nullptr) {
 		if (!ppu->does_user_own_game(gameid)) {
-			if (ppu->get_available_funds() >= pg->get_price()) {
-				ppu->add_game(gameid);
-				ppu->set_funds(ppu->get_available_funds() - pg->get_price());
-				DatabaseManager::instance().add_purchase(ppu->get_username(), gameid, pg->get_price());
-				std::cout << "You have purchased " << pg->get_title() << "!\n";
+			if (ppu->get_age() >= pg->get_age_rating()) {
+				if (ppu->get_available_funds() >= pg->get_price()) {
+					ppu->add_game(gameid);
+					ppu->set_funds(ppu->get_available_funds() - pg->get_price());
+					DatabaseManager::instance().add_purchase(ppu->get_username(), gameid, pg->get_price());
+					std::cout << "You have purchased " << pg->get_title() << "!\n";
+				}
+				else std::cout << "You do not have enough funds.\n";
 			}
-			else {
-				std::cout << "You do not have enough funds.\n";
-			}
+			else std::cout << "You must be " << pg->get_age_rating() << " years old to buy that game.\n";
 		}
-		else {
-			std::cout << "You already own that game.\n";
-		}
+		else std::cout << "You already own that game.\n";
 	}
-	else {
-		std::cout << "That is not a valid game id.\n";
-	}
+	else std::cout << "That is not a valid game id.\n";
 }
 
 void MenuSystem::add_funds(PlayerUser* ppu) {
@@ -305,13 +304,121 @@ void MenuSystem::play_game(PlayerUser* ppu) {
 			std::cout << "I hope you enjoyed your fun and interactive gaming experience.\n";
 			DatabaseManager::instance().add_play(ppu->get_username(), gameid, duration);
 		}
-		else {
-			std::cout << "You don't own that game.";
+		else std::cout << "You don't own that game.\n";
+	}
+	else std::cout << "That is not a valid game id.\n";
+}
+
+void MenuSystem::gift_game(PlayerUser* ppu) {
+	Game::GameId gameid;
+	std::cout << "Enter the id of the game you wish to gift: ";
+	std::cin >> gameid;
+	Game* pg = DatabaseManager::instance().find_game(gameid);
+	if (pg != nullptr) {
+		if (ppu->does_user_own_game(gameid)) {
+			std::string username;
+			std::cout << "Please enter the name of the user you wish to gift " << pg->get_title << " to: ";
+			std::cin >> username;
+			UserBase* pRecipient = DatabaseManager::instance().find_user(username);
+			if (pRecipient != nullptr) {
+				if (pRecipient->get_user_type() == UserTypeId::kPlayerUser) {
+					PlayerUser* pRecipientPlayer = dynamic_cast<PlayerUser*>(pRecipient);
+					if (pRecipientPlayer->get_age() >= pg->get_age_rating()) {
+						ppu->remove_game(gameid);
+						pRecipientPlayer->add_game(gameid);
+					}
+					else std::cout << "That user is not the appropriate age for this game.\n";
+				}
+				else std::cout << "That user is not a player user, and cannot own games.\n";
+			}
+			else std::cout << "That user does not exist.\n";
 		}
+		else std::cout << "You don't own that game.\n";
 	}
-	else {
-		std::cout << "That is not a valid game id.\n";
-	}
+	else std::cout << "That is not a valid game id.\n";
+}
+
+void MenuSystem::stats_menu() {
+	int result = 0;
+	do {
+		std::cout << "Statistics Menu\n";
+		std::cout << "(1) List all purchases\n";
+		std::cout << "(2) List all plays\n";
+		std::cout << "(3) List average playtime by game\n";
+		std::cout << "(4) List average playtime by player\n";
+		std::cout << "(5) Rank games by total time played\n";
+		std::cout << "(6) Rank players by total time played\n";
+		std::cout << "(7) Rank games by average time played\n";
+		std::cout << "(8) Rank players by average time played\n";
+		std::cout << "(9) Get average game price\n";
+		std::cout << "(a) List games by price\n";
+		std::cout << "(b) List games by age rating\n";
+		std::cout << "(q) Go Back\n";
+
+		char option;
+		std::cin >> option;
+
+		switch (option)
+		{
+		case '1': list_all_purchases(); break;
+		case '2': list_all_plays(); break;
+		case '3': list_avg_playtime_game(); break;
+		case '4': list_avg_playtime_player(); break;
+		case '5': rank_games_total(); break;
+		case '6': rank_players_total(); break;
+		case '7': rank_games_avg(); break;
+		case '8': rank_players_avg(); break;
+		case '9': get_avg_price(); break;
+		case 'a': list_games_price(); break;
+		case 'b': list_games_age(); break;
+		case 'q': result = -1; break;
+		default:  std::cout << "INVALID OPTION\n"; break;
+		}
+	} while (result == 0);
+}
+
+void MenuSystem::list_all_purchases() {
+	
+}
+
+void MenuSystem::list_all_plays() {
+
+}
+
+void MenuSystem::list_avg_playtime_game() {
+
+}
+
+void MenuSystem::list_avg_playtime_player() {
+
+}
+
+void MenuSystem::rank_games_total() {
+
+}
+
+void MenuSystem::rank_players_total() {
+
+}
+
+void MenuSystem::rank_games_avg() {
+
+}
+
+void MenuSystem::rank_players_avg() {
+
+}
+
+void MenuSystem::get_avg_price() {
+
+}
+
+void MenuSystem::list_games_price() {
+
+}
+
+void MenuSystem::list_games_age() {
+
 }
 
 int MenuSystem::run_unknown_user_menu()

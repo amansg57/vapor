@@ -67,6 +67,8 @@ public:
 
 	void add_game(Game::GameId);
 
+	void remove_game(Game::GameId);
+
 	bool does_user_own_game(Game::GameId);
 
 private:

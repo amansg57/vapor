@@ -13,3 +13,7 @@ bool PlayerUser::does_user_own_game(Game::GameId gameid) {
 	bool found = (std::find(m_ownedGames.begin(), m_ownedGames.end(), gameid) != m_ownedGames.end());
 	return found;
 }
+
+void PlayerUser::remove_game(Game::GameId gameid) {
+	m_ownedGames.erase(remove(m_ownedGames.begin(), m_ownedGames.end(), gameid));
+}
