@@ -231,6 +231,7 @@ int MenuSystem::run_player_user_menu()
 		std::cout << "(3) Buy Game\n";
 		std::cout << "(4) Add Funds\n";
 		std::cout << "(5) Play Game\n";
+		std::cout << "(6) Gift Game\n";
 		std::cout << "(q) Logout\n";
 
 		char option;
@@ -243,6 +244,7 @@ int MenuSystem::run_player_user_menu()
 		case '3': buy_game(pPlayerUser); break;
 		case '4': add_funds(pPlayerUser); break;
 		case '5': play_game(pPlayerUser); break;
+		case '6': gift_game(pPlayerUser); break;
 		case 'q': result = -1; break;
 		default:  std::cout << "INVALID OPTION\n"; break;
 		}
@@ -468,14 +470,29 @@ void MenuSystem::get_avg_price() {
 }
 
 void MenuSystem::rank_games_price() {
-	std::multimap<int, std::string> priceMap;
+	std::multimap<double, std::string> priceMap;
 	auto visitGameLambda = [&priceMap](const Game& rGame) {
-
+		priceMap.insert(std::make_pair(rGame.get_price(), rGame.get_title()));
 	};
+	DatabaseManager::instance().visit_games(visitGameLambda);
+	int count(1);
+	for (auto it = priceMap.rbegin(); it != priceMap.rend(); ++it)
+	{
+		std::cout << count++ << ": " << it->second << " (" << it->first << ")\n";
+	}
 }
 
 void MenuSystem::rank_games_age() {
-
+	std::multimap<int, std::string> ageMap;
+	auto visitGameLambda = [&ageMap](const Game& rGame) {
+		ageMap.insert(std::make_pair(rGame.get_age_rating(), rGame.get_title()));
+	};
+	DatabaseManager::instance().visit_games(visitGameLambda);
+	int count(1);
+	for (auto it = ageMap.rbegin(); it != ageMap.rend(); ++it)
+	{
+		std::cout << count++ << ": " << it->second << " (" << it->first << ")\n";
+	}
 }
 
 int MenuSystem::run_unknown_user_menu()

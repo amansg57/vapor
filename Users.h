@@ -91,6 +91,25 @@ public:
 };
 
 //--
+// GameStudio represents a user who manages their own games
+//--
+class GameStudio : public UserBase
+{
+public:
+	using GameList = std::list<Game::GameId>;
+
+	// inherit the constructor.
+	using UserBase::UserBase;
+
+	// define the specific user type.
+	virtual const UserTypeId get_user_type() const override { return UserTypeId::kGuest; }
+
+private:
+	GameList m_ownedGames; // List of owned games.
+};
+
+
+//--
 // Guest represents a user who is not in the system
 //--
 class Guest : public UserBase
