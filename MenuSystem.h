@@ -37,15 +37,13 @@ private:
 	void stats_menu();
 	void list_all_purchases();
 	void list_all_plays();
-	void list_avg_playtime_game();
-	void list_avg_playtime_player();
 	void rank_games_total();
 	void rank_players_total();
 	void rank_games_avg();
 	void rank_players_avg();
 	void get_avg_price();
-	void list_games_price();
-	void list_games_age();
+	void rank_games_price();
+	void rank_games_age();
 
 private:
 	UserBase* m_pUser = nullptr;  // the currently logged in user.

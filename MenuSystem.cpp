@@ -4,6 +4,8 @@
 
 #include "MenuSystem.h"
 #include "UserTypeId.h"
+#include <map>
+#include <cmath>
 
 MenuSystem& MenuSystem::instance()
 {
@@ -317,7 +319,7 @@ void MenuSystem::gift_game(PlayerUser* ppu) {
 	if (pg != nullptr) {
 		if (ppu->does_user_own_game(gameid)) {
 			std::string username;
-			std::cout << "Please enter the name of the user you wish to gift " << pg->get_title << " to: ";
+			std::cout << "Please enter the name of the user you wish to gift " << pg->get_title() << " to: ";
 			std::cin >> username;
 			UserBase* pRecipient = DatabaseManager::instance().find_user(username);
 			if (pRecipient != nullptr) {
@@ -341,18 +343,16 @@ void MenuSystem::gift_game(PlayerUser* ppu) {
 void MenuSystem::stats_menu() {
 	int result = 0;
 	do {
-		std::cout << "Statistics Menu\n";
+		std::cout << "\nStatistics Menu\n";
 		std::cout << "(1) List all purchases\n";
 		std::cout << "(2) List all plays\n";
-		std::cout << "(3) List average playtime by game\n";
-		std::cout << "(4) List average playtime by player\n";
-		std::cout << "(5) Rank games by total time played\n";
-		std::cout << "(6) Rank players by total time played\n";
-		std::cout << "(7) Rank games by average time played\n";
-		std::cout << "(8) Rank players by average time played\n";
-		std::cout << "(9) Get average game price\n";
-		std::cout << "(a) List games by price\n";
-		std::cout << "(b) List games by age rating\n";
+		std::cout << "(3) Rank games by total time played\n";
+		std::cout << "(4) Rank players by total time played\n";
+		std::cout << "(5) Rank games by average time played\n";
+		std::cout << "(6) Rank players by average time played\n";
+		std::cout << "(7) Get average game price\n";
+		std::cout << "(8) Rank games by price\n";
+		std::cout << "(9) Rank games by age rating\n";
 		std::cout << "(q) Go Back\n";
 
 		char option;
@@ -362,15 +362,13 @@ void MenuSystem::stats_menu() {
 		{
 		case '1': list_all_purchases(); break;
 		case '2': list_all_plays(); break;
-		case '3': list_avg_playtime_game(); break;
-		case '4': list_avg_playtime_player(); break;
-		case '5': rank_games_total(); break;
-		case '6': rank_players_total(); break;
-		case '7': rank_games_avg(); break;
-		case '8': rank_players_avg(); break;
-		case '9': get_avg_price(); break;
-		case 'a': list_games_price(); break;
-		case 'b': list_games_age(); break;
+		case '3': rank_games_total(); break;
+		case '4': rank_players_total(); break;
+		case '5': rank_games_avg(); break;
+		case '6': rank_players_avg(); break;
+		case '7': get_avg_price(); break;
+		case '8': rank_games_price(); break;
+		case '9': rank_games_age(); break;
 		case 'q': result = -1; break;
 		default:  std::cout << "INVALID OPTION\n"; break;
 		}
@@ -378,46 +376,105 @@ void MenuSystem::stats_menu() {
 }
 
 void MenuSystem::list_all_purchases() {
-	
+	auto listPurchaseLambda = [](const Purchase& rPurchase) {
+		std::cout << "\nUsername: " << rPurchase.get_player() << "\n";
+		Game* pg = DatabaseManager::instance().find_game(rPurchase.get_gameid());
+		std::cout << "Game: " << pg->get_title() << "\n";
+		std::cout << "Date and time of Purchase: " << rPurchase.get_dateTime()->to_string() << "\n";
+		std::cout << "Price at time of Purchase: " << rPurchase.get_price() << "\n";
+	};
+	DatabaseManager::instance().visit_purchases(listPurchaseLambda);
 }
 
-void MenuSystem::list_all_plays() {
-
-}
-
-void MenuSystem::list_avg_playtime_game() {
-
-}
-
-void MenuSystem::list_avg_playtime_player() {
-
+void MenuSystem::list_all_plays() { 
+	auto listPlayLambda = [](const Play& rPlay) {
+		std::cout << "\nUsername: " << rPlay.get_player() << "\n";
+		Game* pg = DatabaseManager::instance().find_game(rPlay.get_gameid());
+		std::cout << "Game: " << pg->get_title() << "\n";
+		std::cout << "Date and time of Purchase: " << rPlay.get_dateTime()->to_string() << "\n";
+		std::cout << "Playtime in minutes: " << rPlay.get_length() << "\n";
+	};
+	DatabaseManager::instance().visit_plays(listPlayLambda);
 }
 
 void MenuSystem::rank_games_total() {
-
+	std::multimap<int, Game::GameId> playtimeMap;
+	auto visitGameLambda = [&playtimeMap](const Game& rGame) {
+		int totalPlaytime = DatabaseManager::instance().find_total_playtime_of_game(rGame.get_game_id());
+		playtimeMap.insert(std::make_pair(totalPlaytime, rGame.get_game_id()));
+	};
+	DatabaseManager::instance().visit_games(visitGameLambda);
+	int count(1);
+	for (auto it = playtimeMap.rbegin(); it != playtimeMap.rend(); ++it)
+	{
+		Game* pg = DatabaseManager::instance().find_game(it->second);
+		std::cout << count++ << ": " << pg->get_title() << " (" << it->first << ")\n";
+	}
 }
 
 void MenuSystem::rank_players_total() {
-
+	std::multimap<int, std::string> playtimeMap;
+	auto visitPlayerLambda = [&playtimeMap](const UserBase& rUser) {
+		int totalPlaytime = DatabaseManager::instance().find_total_playtime_of_user(rUser.get_username());
+		if (totalPlaytime != -1) playtimeMap.insert(std::make_pair(totalPlaytime, rUser.get_username()));
+	};
+	DatabaseManager::instance().visit_users(visitPlayerLambda);
+	int count(1);
+	for (auto it = playtimeMap.rbegin(); it != playtimeMap.rend(); ++it)
+	{
+		std::cout << count++ << ": " << it->second << " (" << it->first << ")\n";
+	}
 }
 
 void MenuSystem::rank_games_avg() {
-
+	std::multimap<int, Game::GameId> playtimeMap;
+	auto visitGameLambda = [&playtimeMap](const Game& rGame) {
+		int avgPlaytime = DatabaseManager::instance().find_avg_playtime_of_game(rGame.get_game_id());
+		playtimeMap.insert(std::make_pair(avgPlaytime, rGame.get_game_id()));
+	};
+	DatabaseManager::instance().visit_games(visitGameLambda);
+	int count(1);
+	for (auto it = playtimeMap.rbegin(); it != playtimeMap.rend(); ++it)
+	{
+		Game* pg = DatabaseManager::instance().find_game(it->second);
+		std::cout << count++ << ": " << pg->get_title() << " (" << it->first << ")\n";
+	}
 }
 
 void MenuSystem::rank_players_avg() {
-
+	std::multimap<int, std::string> playtimeMap;
+	auto visitPlayerLambda = [&playtimeMap](const UserBase& rUser) {
+		int avgPlaytime = DatabaseManager::instance().find_avg_playtime_of_user(rUser.get_username());
+		if (avgPlaytime != -1) playtimeMap.insert(std::make_pair(avgPlaytime, rUser.get_username()));
+	};
+	DatabaseManager::instance().visit_users(visitPlayerLambda);
+	int count(1);
+	for (auto it = playtimeMap.rbegin(); it != playtimeMap.rend(); ++it)
+	{
+		std::cout << count++ << ": " << it->second << " (" << it->first << ")\n";
+	}
 }
 
 void MenuSystem::get_avg_price() {
-
+	int count(0);
+	double accum(0);
+	auto visitGameLambda = [&accum, &count](const Game& rGame) {
+		accum += rGame.get_price();
+		++count;
+	};
+	DatabaseManager::instance().visit_games(visitGameLambda);
+	double roundedAvg = round((accum / count) * 100) / 100;
+	std::cout << "Average price of games: " << roundedAvg << "\n";
 }
 
-void MenuSystem::list_games_price() {
+void MenuSystem::rank_games_price() {
+	std::multimap<int, std::string> priceMap;
+	auto visitGameLambda = [&priceMap](const Game& rGame) {
 
+	};
 }
 
-void MenuSystem::list_games_age() {
+void MenuSystem::rank_games_age() {
 
 }
 

@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 DatabaseManager::DatabaseManager()
 {
@@ -207,6 +208,68 @@ void DatabaseManager::add_play(const std::string& username, const Game::GameId& 
 void DatabaseManager::add_play(const std::string& username, const Game::GameId& gameid, const int& length, const std::string& dateTimeStr)
 {
 	m_plays.push_back(Play(username, gameid, length, dateTimeStr));
+}
+
+int DatabaseManager::find_avg_playtime_of_game(const Game::GameId& gameid)
+{
+	auto getPlaysLambda = [gameid](const Play& rPlay) {
+		return (rPlay.get_gameid() == gameid);
+	};
+	std::list<Play>::iterator it = std::find_if(m_plays.begin(), m_plays.end(), getPlaysLambda);
+	int count(0), accum(0);
+	while (it != m_plays.end()) {
+		accum += it->get_length();
+		++count;
+		it = std::find_if(++it, m_plays.end(), getPlaysLambda);
+	}
+	if (count != 0) { return (accum / count); }
+	else return 0;
+}
+
+int DatabaseManager::find_total_playtime_of_game(const Game::GameId& gameid)
+{
+	auto getPlaysLambda = [gameid](const Play& rPlay) {
+		return (rPlay.get_gameid() == gameid);
+	};
+	std::list<Play>::iterator it = std::find_if(m_plays.begin(), m_plays.end(), getPlaysLambda);
+	int accum(0);
+	while (it != m_plays.end()) {
+		accum += it->get_length();
+		it = std::find_if(++it, m_plays.end(), getPlaysLambda);
+	}
+	return accum;
+}
+
+int DatabaseManager::find_avg_playtime_of_user(const std::string& username)
+{
+	if (find_user(username)->get_user_type() != UserTypeId::kPlayerUser) return -1;
+	auto getPlaysLambda = [username](const Play& rPlay) {
+		return (rPlay.get_player() == username);
+	};
+	std::list<Play>::iterator it = std::find_if(m_plays.begin(), m_plays.end(), getPlaysLambda);
+	int count(0), accum(0);
+	while (it != m_plays.end()) {
+		accum += it->get_length();
+		++count;
+		it = std::find_if(++it, m_plays.end(), getPlaysLambda);
+	}
+	if (count != 0) { return (accum / count); }
+	else return 0;
+}
+
+int DatabaseManager::find_total_playtime_of_user(const std::string& username)
+{
+	if (find_user(username)->get_user_type() != UserTypeId::kPlayerUser) return -1;
+	auto getPlaysLambda = [username](const Play& rPlay) {
+		return (rPlay.get_player() == username);
+	};
+	std::list<Play>::iterator it = std::find_if(m_plays.begin(), m_plays.end(), getPlaysLambda);
+	int accum(0);
+	while (it != m_plays.end()) {
+		accum += it->get_length();
+		it = std::find_if(++it, m_plays.end(), getPlaysLambda);
+	}
+	return accum;
 }
 
 void DatabaseManager::add_purchase(const std::string& username, const Game::GameId& gameid, const double& price)

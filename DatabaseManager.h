@@ -63,6 +63,14 @@ public:
 		for (auto it : m_plays) { func(it); }
 	}
 
+	int find_avg_playtime_of_game(const Game::GameId& gameid);
+
+	int find_total_playtime_of_game(const Game::GameId& gameid);
+
+	int find_avg_playtime_of_user(const std::string& username);
+
+	int find_total_playtime_of_user(const std::string& username);
+
 	// Adds purchases, new purchase and importing purchase from file
 	void add_purchase(const std::string& username, const Game::GameId& gameid, const double& price);
 	void add_purchase(const std::string& username, const Game::GameId& gameid, const double& price, const std::string& dateTimeStr);
@@ -72,6 +80,8 @@ public:
 	{
 		for (auto it : m_purchases) { func(it); }
 	}
+
+
 
 private:
 	// Constructors are private for singleton pattern.
