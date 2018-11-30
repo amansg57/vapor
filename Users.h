@@ -102,6 +102,8 @@ public:
 	// inherit the constructor.
 	using UserBase::UserBase;
 
+	const PlayerUser::GameList& get_game_list() const { return m_ownedGames; }
+
 	void add_game(const Game::GameId&);
 
 	void remove_game(const Game::GameId&);
@@ -109,7 +111,7 @@ public:
 	bool does_user_own_game(const Game::GameId&);
 
 	// define the specific user type.
-	virtual const UserTypeId get_user_type() const override { return UserTypeId::kGuest; }
+	virtual const UserTypeId get_user_type() const override { return UserTypeId::kGameStudio; }
 
 private:
 	GameList m_ownedGames; // List of owned games.

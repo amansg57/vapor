@@ -26,6 +26,7 @@ private:
 	int run_admin_user_menu();
 	int run_player_user_menu();
 	int run_unknown_user_menu();
+	int run_gamestudio_user_menu();
 	void add_game();
 	void add_user();
 	void modify_game();
@@ -44,6 +45,7 @@ private:
 	void get_avg_price();
 	void rank_games_price();
 	void rank_games_age();
+	void rank_games_sales();
 	void view_game_details();
 
 private:

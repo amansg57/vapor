@@ -112,6 +112,39 @@ int MenuSystem::run_admin_user_menu()
 	return 0;
 }
 
+int MenuSystem::run_gamestudio_user_menu()
+{
+	GameStudio* pGameStudio = static_cast<GameStudio*>(m_pUser);
+	int result = 0;
+	do
+	{
+		std::cout << "Game Studio Menu (" << m_pUser->get_username() << ")\n";
+		std::cout << "(1) List All Games\n";
+		std::cout << "(2) Add Game\n";
+		std::cout << "(3) Modify Game\n";
+		std::cout << "(4) View Game Details\n";
+		std::cout << "(q) Logout\n";
+
+		char option;
+		std::cin >> option;
+
+		switch (option)
+		{
+		case '1': list_all_games(); break;
+		case '2': add_game(); break;
+		case '3': modify_game(); break;
+		case '4': view_game_details(); break;
+		case 'q': result = -1; break;
+		default:  std::cout << "INVALID OPTION\n"; break;
+		}
+	} while (result == 0);
+
+	// force logout.
+	m_pUser = nullptr;
+
+	return 0;
+}
+
 void MenuSystem::add_game()
 {
 	int id, age_rating;
@@ -128,9 +161,16 @@ void MenuSystem::add_game()
 	std::cin >> price;
 	std::cout << "Enter an age rating for the game: ";
 	std::cin >> age_rating;
-	Game newGame = Game(id, name, desc, price, age_rating);
-	DatabaseManager::instance().add_game(newGame);
-	std::cout << "Game added successfully\n";
+	if (DatabaseManager::instance().find_game(id) == nullptr) {
+		Game newGame = Game(id, name, desc, price, age_rating);
+		DatabaseManager::instance().add_game(newGame);
+		if (m_pUser->get_user_type() == UserTypeId::kGameStudio) {
+			GameStudio* pGameStudio = static_cast<GameStudio*>(m_pUser);
+			pGameStudio->add_game(id);
+		}
+		std::cout << "Game added successfully\n";
+	}
+	else std::cout << "That game id already exists\n";
 }
 
 void MenuSystem::add_user()
@@ -155,6 +195,9 @@ void MenuSystem::add_user()
 		std::cin >> age;
 		DatabaseManager::instance().add_user(new PlayerUser(un, pw, email, age));
 		break;
+	case UserTypeId::kGameStudio:
+		DatabaseManager::instance().add_user(new GameStudio(un, pw, email));
+		break;
 	}
 }
 
@@ -168,68 +211,77 @@ void MenuSystem::modify_game()
 		std::cout << "That id does not exist.";
 	}
 	else {
-		int result = 0;
-		do {
-			std::cout << "Modify " << pg->get_title() << "\n";
-			std::cout << "(1) Change Title\n";
-			std::cout << "(2) Change Description\n";
-			std::cout << "(3) Change Price\n";
-			std::cout << "(4) Change Age Rating\n";
-			std::cout << "(5) Remove Game\n";
-			std::cout << "(q) Go Back\n";
+		bool canModify = false;
+		if (m_pUser->get_user_type() == UserTypeId::kAdminUser) canModify = true;
+		else {
+			GameStudio* pGameStudio = static_cast<GameStudio*>(m_pUser);
+			canModify = pGameStudio->does_user_own_game(pg->get_game_id());
+		}
+		if (canModify) {
+			int result = 0;
+			do {
+				std::cout << "Modify " << pg->get_title() << "\n";
+				std::cout << "(1) Change Title\n";
+				std::cout << "(2) Change Description\n";
+				std::cout << "(3) Change Price\n";
+				std::cout << "(4) Change Age Rating\n";
+				std::cout << "(5) Remove Game\n";
+				std::cout << "(q) Go Back\n";
 
-			char option;
-			std::cin >> option;
+				char option;
+				std::cin >> option;
 
-			switch (option)
-			{
-			case '1': 
-			{
-				std::string title;
-				std::cin.ignore();
-				std::cout << "Enter new title: ";
-				std::getline(std::cin, title);
-				pg->set_title(title);
-				std::cout << "New title set to " << title << "\n";
-				break;
-			}
-			case '2': 
-			{
-				std::string desc;
-				std::cin.ignore();
-				std::cout << "Enter new description: ";
-				std::getline(std::cin, desc);
-				pg->set_desc(desc);
-				std::cout << "New description set to \"" << desc << "\"" << "\n";
-				break;
-			}
-			case '3': 
-			{
-				double price;
-				std::cout << "Enter new price: ";
-				std::cin >> price;
-				pg->set_price(price);
-				std::cout << "New price set to \x9C" << price << "\n";
-				break;
-			}
-			case '4': 
-			{
-				int age_rating;
-				std::cout << "Enter new age rating: ";
-				std::cin >> age_rating;
-				pg->set_age_rating(age_rating);
-				std::cout << "New age rating set to " << age_rating << "\n";
-				break;
-			}
-			case '5': 
-				std::cout << pg->get_title() << " has been removed. \n";
-				DatabaseManager::instance().remove_game(id);
-				result = -1;
-				break;
-			case 'q': result = -1; break;
-			default:  std::cout << "INVALID OPTION\n"; break;
-			}
-		} while (result == 0);
+				switch (option)
+				{
+				case '1':
+				{
+					std::string title;
+					std::cin.ignore();
+					std::cout << "Enter new title: ";
+					std::getline(std::cin, title);
+					pg->set_title(title);
+					std::cout << "New title set to " << title << "\n";
+					break;
+				}
+				case '2':
+				{
+					std::string desc;
+					std::cin.ignore();
+					std::cout << "Enter new description: ";
+					std::getline(std::cin, desc);
+					pg->set_desc(desc);
+					std::cout << "New description set to \"" << desc << "\"" << "\n";
+					break;
+				}
+				case '3':
+				{
+					double price;
+					std::cout << "Enter new price: ";
+					std::cin >> price;
+					pg->set_price(price);
+					std::cout << "New price set to \x9C" << price << "\n";
+					break;
+				}
+				case '4':
+				{
+					int age_rating;
+					std::cout << "Enter new age rating: ";
+					std::cin >> age_rating;
+					pg->set_age_rating(age_rating);
+					std::cout << "New age rating set to " << age_rating << "\n";
+					break;
+				}
+				case '5':
+					std::cout << pg->get_title() << " has been removed. \n";
+					DatabaseManager::instance().remove_game(id);
+					result = -1;
+					break;
+				case 'q': result = -1; break;
+				default:  std::cout << "INVALID OPTION\n"; break;
+				}
+			} while (result == 0);
+		}
+		else std::cout << "You are not the owner of that game.";
 	}
 }
 
@@ -371,6 +423,7 @@ void MenuSystem::stats_menu() {
 		std::cout << "(7) Get average game price\n";
 		std::cout << "(8) Rank games by price\n";
 		std::cout << "(9) Rank games by age rating\n";
+		std::cout << "(a) Rank games by sales\n";
 		std::cout << "(q) Go Back\n";
 
 		char option;
@@ -387,6 +440,7 @@ void MenuSystem::stats_menu() {
 		case '7': get_avg_price(); break;
 		case '8': rank_games_price(); break;
 		case '9': rank_games_age(); break;
+		case 'a': rank_games_sales(); break;
 		case 'q': result = -1; break;
 		default:  std::cout << "INVALID OPTION\n"; break;
 		}
@@ -511,6 +565,20 @@ void MenuSystem::rank_games_age() {
 	}
 }
 
+void MenuSystem::rank_games_sales() {
+	std::multimap<int, std::string> salesMap;
+	auto visitGameLambda = [&salesMap](const Game& rGame) {
+		int sales = DatabaseManager::instance().get_no_of_purchases_for_game(rGame.get_game_id());
+		salesMap.insert(std::make_pair(sales, rGame.get_title()));
+	};
+	DatabaseManager::instance().visit_games(visitGameLambda);
+	int count(1);
+	for (auto it = salesMap.rbegin(); it != salesMap.rend(); ++it)
+	{
+		std::cout << count++ << ": " << it->second << " (" << it->first << ")\n";
+	}
+}
+
 void MenuSystem::view_game_details() {
 	Game::GameId gameid;
 	std::cout << "Enter the id of the game you want to view: ";
@@ -569,6 +637,7 @@ int MenuSystem::run()
 			{
 				case UserTypeId::kPlayerUser: result = run_player_user_menu(); break;
 				case UserTypeId::kAdminUser: result = run_admin_user_menu(); break;
+				case UserTypeId::kGameStudio: result = run_gamestudio_user_menu(); break;
 				default: result = -1; break;
 			}
 		}

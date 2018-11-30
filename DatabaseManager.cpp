@@ -47,6 +47,7 @@ void DatabaseManager::load_data()
 			add_user(new AdminUser(elements.at(1), elements.at(2), elements.at(3)));
 			break;
 		case UserTypeId::kPlayerUser:
+		{
 			PlayerUser* pUser = new PlayerUser(elements.at(1), elements.at(2), elements.at(3), std::stoi(elements.at(6)));
 			std::string game;
 			std::stringstream gamesS(elements.at(4));
@@ -56,6 +57,17 @@ void DatabaseManager::load_data()
 			pUser->set_funds(std::stod(elements.at(5)));
 			add_user(pUser);
 			break;
+		}
+		case UserTypeId::kGameStudio:
+		{
+			GameStudio* pStudio = new GameStudio(elements.at(1), elements.at(2), elements.at(3));
+			std::string game;
+			std::stringstream gamesS(elements.at(4));
+			while (std::getline(gamesS, game, '|')) {
+				pStudio->add_game(std::stoi(game));
+			}
+			add_user(pStudio);
+		}
 		}
 	}
 	fin_users.close();
@@ -120,6 +132,7 @@ void DatabaseManager::store_data()
 			fout_users << "\n";
 			break;
 		case UserTypeId::kPlayerUser :
+		{
 			const PlayerUser* ppu(dynamic_cast<const PlayerUser*>(&rUser));
 			fout_users << ",";
 			for (auto const& gameid : ppu->get_game_list()) {
@@ -127,6 +140,17 @@ void DatabaseManager::store_data()
 			}
 			fout_users << "," << ppu->get_available_funds() << "," << ppu->get_age() << "\n";
 			break;
+		}
+		case UserTypeId::kGameStudio :
+		{
+			const GameStudio* pgs(dynamic_cast<const GameStudio*>(&rUser));
+			fout_users << ",";
+			for (auto const& gameid : pgs->get_game_list()) {
+				fout_users << gameid << "|";
+			}
+			fout_users << "\n";
+			break;
+		}
 		}
 	};
 	visit_users(userVisitorLambda);
@@ -294,4 +318,17 @@ void DatabaseManager::add_purchase(const std::string& username, const Game::Game
 void DatabaseManager::add_purchase(const std::string& username, const Game::GameId& gameid, const double& price, const std::string& dateTimeStr)
 {
 	m_purchases.push_back(Purchase(username, gameid, price, dateTimeStr));
+}
+
+int DatabaseManager::get_no_of_purchases_for_game(const Game::GameId& gameid) {
+	auto getPurchaseLambda = [gameid](const Purchase& rPurchase) {
+		return (rPurchase.get_gameid() == gameid);
+	};
+	std::list<Purchase>::iterator it = std::find_if(m_purchases.begin(), m_purchases.end(), getPurchaseLambda);
+	int count(0);
+	while (it != m_purchases.end()) {
+		++count;
+		it = std::find_if(++it, m_purchases.end(), getPurchaseLambda);
+	}
+	return count;
 }

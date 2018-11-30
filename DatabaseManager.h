@@ -81,7 +81,7 @@ public:
 		for (auto it : m_purchases) { func(it); }
 	}
 
-
+	int get_no_of_purchases_for_game(const Game::GameId& gameid);
 
 private:
 	// Constructors are private for singleton pattern.

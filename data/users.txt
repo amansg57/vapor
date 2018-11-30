@@ -1,5 +1,6 @@
 1,aman,asdf,amansg57@gmail.com,1234|4789|5246|,8.16,23
 1,andrew,andrew12345,andrew@unknown.com,4789|,15.01,17
+3,asdfstudios,zxcv,asdf@asdfstudios,7890|
 2,davem,12345,d.r.moore@shu.ac.uk
 1,frank,frank12345,frank@unknown.com,,0,14
 1,jake,jake12345,jake@unknown.com,,0,11

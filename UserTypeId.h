@@ -8,5 +8,4 @@ enum class UserTypeId
 	, kPlayerUser = 1
 	, kAdminUser = 2
 	, kGameStudio = 3
-	, kGuest = 4
 };
