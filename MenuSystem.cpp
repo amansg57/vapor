@@ -40,23 +40,36 @@ int MenuSystem::run_login_screen()
 	std::string password;
 
 	std::cout << "Login Menu\n";
+	std::cout << "Use login name \"guest\" to login as a guest.\n";
 	std::cout << "Username: ";
 	std::cin >> username;
 
-	std::cout << "Password: ";
-	std::cin >> password;
+	if (username == "guest") {
+		std::string email;
+		std::cout << "Please enter your email address.";
+		std::cin >> email;
+		if (Guest::instance().does_email_exist(email)) {
+			std::cout << "Welcome back! We invite you to sign up to our service.\n";
+		}
+		else Guest::instance().add_email(email);
+	}
+	else {
+		std::cout << "Password: ";
+		std::cin >> password;
 
-	// find the user and check password
-	auto pUser = DatabaseManager::instance().find_user(username);
-	if (pUser && pUser->get_password() == password)
-	{
-		m_pUser = pUser;
-		std::cout << "Hi " << m_pUser->get_username() << "\n";
+		// find the user and check password
+		auto pUser = DatabaseManager::instance().find_user(username);
+		if (pUser && pUser->get_password() == password)
+		{
+			m_pUser = pUser;
+			std::cout << "Hi " << m_pUser->get_username() << "\n";
+		}
+		else
+		{
+			std::cout << "No such username or password!\n";
+		}
 	}
-	else
-	{
-		std::cout << "No such username or password!\n";
-	}
+	
 	return 0;
 }
 
@@ -73,6 +86,7 @@ int MenuSystem::run_admin_user_menu()
 		std::cout << "(4) Add User\n";
 		std::cout << "(5) Modify Game\n";
 		std::cout << "(6) Access Statistics\n";
+		std::cout << "(7) View Game Details\n";
 		std::cout << "(q) Logout\n";
 
 		char option;
@@ -86,6 +100,7 @@ int MenuSystem::run_admin_user_menu()
 		case '4': add_user(); break;
 		case '5': modify_game(); break;
 		case '6': stats_menu(); break;
+		case '7': view_game_details(); break;
 		case 'q': result = -1; break;
 		default:  std::cout << "INVALID OPTION\n"; break;
 		}
@@ -232,6 +247,7 @@ int MenuSystem::run_player_user_menu()
 		std::cout << "(4) Add Funds\n";
 		std::cout << "(5) Play Game\n";
 		std::cout << "(6) Gift Game\n";
+		std::cout << "(7) View Game Details\n";
 		std::cout << "(q) Logout\n";
 
 		char option;
@@ -493,6 +509,20 @@ void MenuSystem::rank_games_age() {
 	{
 		std::cout << count++ << ": " << it->second << " (" << it->first << ")\n";
 	}
+}
+
+void MenuSystem::view_game_details() {
+	Game::GameId gameid;
+	std::cout << "Enter the id of the game you want to view: ";
+	std::cin >> gameid;
+	Game* pg = DatabaseManager::instance().find_game(gameid);
+	if (pg != nullptr) {
+		std::cout << "Name: " << pg->get_title() << "\n";
+		std::cout << "Description: " << pg->get_desc() << "\n";
+		std::cout << "Price: \x9C" << pg->get_price() << "\n";
+		std::cout << "Age Rating" << pg->get_age_rating() << "\n";
+	}
+	else std::cout << "That is not a valid game id.\n";
 }
 
 int MenuSystem::run_unknown_user_menu()

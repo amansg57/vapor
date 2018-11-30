@@ -7,6 +7,7 @@
 #include <list>
 #include "Game.h"
 #include "UserTypeId.h"
+#include <vector>
 
 //--
 // UserBase represents a user base class for the system.
@@ -65,11 +66,11 @@ public:
 
 	void set_funds(double funds) { m_accountFunds = funds; }
 
-	void add_game(Game::GameId);
+	void add_game(const Game::GameId&);
 
-	void remove_game(Game::GameId);
+	void remove_game(const Game::GameId&);
 
-	bool does_user_own_game(Game::GameId);
+	bool does_user_own_game(const Game::GameId&);
 
 private:
 	GameList m_ownedGames; // List of owned games.
@@ -101,6 +102,12 @@ public:
 	// inherit the constructor.
 	using UserBase::UserBase;
 
+	void add_game(const Game::GameId&);
+
+	void remove_game(const Game::GameId&);
+
+	bool does_user_own_game(const Game::GameId&);
+
 	// define the specific user type.
 	virtual const UserTypeId get_user_type() const override { return UserTypeId::kGuest; }
 
@@ -112,13 +119,19 @@ private:
 //--
 // Guest represents a user who is not in the system
 //--
-class Guest : public UserBase
+class Guest
 {
 public:
-	// inherit the constructor.
-	using UserBase::UserBase;
+	// Singleton instance definition.
+	static Guest& instance();
 
-	// define the specific user type.
-	virtual const UserTypeId get_user_type() const override { return UserTypeId::kGuest; }
+	void add_email(std::string);
+
+	bool does_email_exist(std::string);
+
+	const std::vector<std::string>& get_emails() { return m_emails; }
+
+private:
+	std::vector<std::string> m_emails;
 };
 

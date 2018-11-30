@@ -98,6 +98,14 @@ void DatabaseManager::load_data()
 		add_purchase(elements.at(0), std::stoi(elements.at(1)), std::stod(elements.at(2)), elements.at(3));
 	}
 	fin_purchases.close();
+
+	// Load Guests
+	std::ifstream fin_guests("data\\guests.txt");
+	std::string email;
+	while (std::getline(fin_guests, email, ',')) {
+		Guest::instance().add_email(email);
+	}
+	fin_guests.close();
 }
 
 void DatabaseManager::store_data()
@@ -150,6 +158,12 @@ void DatabaseManager::store_data()
 	};
 	visit_purchases(purchaseVisitorLambda);
 	fout_purchases.close();
+
+	// Store Guests
+	std::ofstream fout_guests("data\\guests.txt");
+	for (auto i : Guest::instance().get_emails()) {
+		fout_guests << i << ",";
+	}
 
 }
 

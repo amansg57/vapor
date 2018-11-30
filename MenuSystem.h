@@ -44,6 +44,7 @@ private:
 	void get_avg_price();
 	void rank_games_price();
 	void rank_games_age();
+	void view_game_details();
 
 private:
 	UserBase* m_pUser = nullptr;  // the currently logged in user.
